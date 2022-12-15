@@ -63,19 +63,29 @@ const formState = reactive({
 // 登录
 const loginSubmit = () => {
 
-  loginRef.value.validate().then(res => {
-    // 登录校验通过
-    const data = { ...formState.value }
-    // 调取登陆接口，保存token,并且跳转首页
-    const { setToken } = useUserStore()
-    loginApi(data).then(res => {
-      setToken(res.token)
-      router.push('/home')
-    })
-    
-  }).catch(err => {
-    console.log(err)
+loginRef.value.validate().then(res => {
+  // 登录校验通过
+  const data = { ...formState.value }
+  // 调取登陆接口，保存token,并且跳转首页
+  const { setToken } = useUserStore()
+  loginApi(JSON.stringify(formState)).then((res) => {
+    console.log(res)
+    if(res.code==200){
+      setToken(res.data.id)
+      router.push({
+        path:'/home',
+        query:{
+          id:res.data.id
+        }
+      })
+    }
+    else{
+      alert("登录失败！")
+    }
   })
+}).catch(err => {
+  console.log(err)
+})
 }
 
 

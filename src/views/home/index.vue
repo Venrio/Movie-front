@@ -9,16 +9,16 @@
           </span>
         </template>
           <a-row type="flex" :gutter="[20,20]">
-            <a-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" v-for="(item, index) in list" :key="index">
+            <a-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" v-for="(item, index) in listRecord" :key="index">
               <a-card hoverable style="width: 100%">
                 <template #cover>
                   <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
                 </template>
-                <a-card-meta title="电影标题">
+                <a-card-meta :title=item.title>
                   <template #description>
                     <div>
                       <div class="tag">
-                        <a-tag color="orange" style="margin-bottom: 10px">悬疑</a-tag>
+                        <a-tag color="orange" style="margin-bottom: 10px">{{item.genres}}</a-tag>
                       </div>
                       <div class="time"><history-outlined /> 2020/09/30 22:00</div>
                     </div>
@@ -139,6 +139,9 @@
 import { HistoryOutlined } from '@ant-design/icons-vue';
 import { onMounted, reactive, ref } from "vue";
 import { useUserStore } from '@/store/useUser'
+import { useRoute } from 'vue-router'
+import { getRecordMovieidApi,getRecordMovieInfoApi } from '@/api/record'
+
 const {noticeClose, setNotice} = useUserStore()
 const activeKey = ref('1')
 const formState = reactive({
@@ -159,7 +162,7 @@ const list = ref(
   ]
 )
 onMounted(() => {
-  
+  getRecord()
 })
 
 // 搜索
@@ -167,12 +170,32 @@ const onFinish = () => {
 
 }
 
+let route = useRoute()
+const id = route.query.id
+const getRecordParam={
+  pageSize:12,
+  pageNum:1,
+  param:{
+    userid:Number(id)
+  },
+  searchId:[]
+}
+const listRecord = reactive([])
 
-
-
+const getRecord=()=>{
+  getRecordMovieidApi(JSON.stringify(getRecordParam)).then((res) => {
+    for(let i=0;i<res.total;i++){
+      getRecordParam.searchId.push(res.data[i].movieid)
+    }
+    getRecordMovieInfoApi(JSON.stringify(getRecordParam)).then((res) => {
+      // console.log(res.data)
+      listRecord.push(...res.data)
+    })
+  })
+}
 
 </script>
-<style scoped>
+<style scoped lang="less">
   /deep/.ant-card-body {
     padding: 10px;
   }

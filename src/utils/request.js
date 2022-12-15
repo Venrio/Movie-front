@@ -28,7 +28,7 @@ service.interceptors.response.use(
       return
     }
 
-    return Promise.resolve(res.data.data)
+    return Promise.resolve(res.data)
   },
   (err) => {
     message.info(err)

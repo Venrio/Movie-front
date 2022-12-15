@@ -1,9 +1,11 @@
 import request from '@/utils/request'
 // 登录
-export const loginApi = () => {
+export const loginApi = (data) => {
   return request({
-    url: '/mock/login',
-    method: 'get'
+    url: 'http://localhost:9000/user/login',
+    method: 'post',
+    headers:{"content-type":"application/json"},
+    data:data
   })
 }
 
